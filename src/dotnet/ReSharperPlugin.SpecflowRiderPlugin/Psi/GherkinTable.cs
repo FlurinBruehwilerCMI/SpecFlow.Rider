@@ -8,6 +8,8 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Psi
 {
     public class GherkinTable : GherkinElement
     {
+        public int RowCount => this.Children<GherkinTableRow>().Count() - 1;// -1 because of the header
+
         public GherkinTable() : base(GherkinNodeTypes.TABLE)
         {
         }

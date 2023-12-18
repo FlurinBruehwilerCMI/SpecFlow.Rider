@@ -5,5 +5,5 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions
 
 public class WorkspaceObjectDefinitionsMergeData
 {
-    public readonly OneToSetMap<IPsiSourceFile, VariableScope> WODPerFile = new();
+    public readonly OneToSetMap<IPsiSourceFile, WorkspaceObjectDefinitionsCacheEntry> WODPerFile = new();
 }

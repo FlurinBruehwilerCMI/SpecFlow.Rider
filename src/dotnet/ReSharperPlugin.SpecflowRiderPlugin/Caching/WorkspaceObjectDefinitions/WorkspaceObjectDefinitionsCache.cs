@@ -9,7 +9,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 using ReSharperPlugin.SpecflowRiderPlugin.Psi;
@@ -19,7 +18,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions
 [PsiComponent]
 public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefinitionsCacheEntries>
 {
-    public OneToSetMap<IPsiSourceFile, VariableScope> VariableScopesPerFile => _mergeData.WODPerFile;
+    public OneToSetMap<IPsiSourceFile, WorkspaceObjectDefinitionsCacheEntry> VariableScopesPerFile => _mergeData.WODPerFile;
 
     private readonly Regex _regex = new(@"ein Objekt vom Typ (?<objTyp>\w*) namens (?<objName>\w*)");
     private readonly WorkspaceObjectDefinitionsMergeData _mergeData = new();
@@ -32,7 +31,7 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
 
     protected override bool IsApplicable(IPsiSourceFile sf)
     {
-        return sf.LanguageType.Is<CSharpProjectFileType>();
+        return sf.LanguageType.Is<GherkinProjectFileType>();
     }
 
     public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -44,8 +43,6 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
 
         if (!file.Language.Is<GherkinLanguage>())
             return null;
-
-        var workspaceObjects = new WorkspaceObjectDefinitionsCacheEntries();
 
         if (file is not GherkinFile gherkinFile)
             return null;
@@ -59,11 +56,7 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
         if (bg is null)
             return null;
 
-        var cacheEntry = new FeatureFileCacheEntry
-        {
-            FeatureFileId = feature.GetFeatureText(),
-            FeatureFileVariableScope = new VariableScope()
-        };
+        var cacheEntries = new WorkspaceObjectDefinitionsCacheEntries();
 
         foreach (var gherkinStep in bg.GetSteps())
         {
@@ -73,18 +66,16 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
                 continue;
 
             var objName = match.Groups["objName"].Value;
-            cacheEntry.FeatureFileVariableScope.WorkspaceObjects.Add(new WorkspaceObjectDefinition
+
+            cacheEntries.Add(new WorkspaceObjectDefinitionsCacheEntry
             {
                 Name = objName,
                 LineNumber = gherkinFile.GetTreeStartOffset().Offset,
-                DeclaredElement = gherkinStep
+                GherkinStep = gherkinStep
             });
-            workspaceObjects.Add(cacheEntry);
-            ResolveResultFactory.CreateResolveResult(gherkinStep);
-
         }
 
-        return workspaceObjects;
+        return cacheEntries;
     }
 
     public override void MergeLoaded(object data)
@@ -111,9 +102,9 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
         if (cacheItems == null)
             return;
 
-        foreach (var featureFile in cacheItems)
+        foreach (var cacheEntry in cacheItems)
         {
-            _mergeData.WODPerFile.Add(sourceFile, featureFile.FeatureFileVariableScope);
+            _mergeData.WODPerFile.Add(sourceFile, cacheEntry);
         }
     }
 

@@ -39,13 +39,11 @@ public class SpeclFlowTablelCellReferenceSearcherFactory : DomainSpecificSearche
         foreach (var sourceFile in declaredElement.GetSourceFiles())
         {
             var wodsInFile = workspaceObjectDefinitionsCache.VariableScopesPerFile[sourceFile];
-            foreach (var variableScope in wodsInFile)
+            foreach (var variableScope in wodsInFile
+                         .Where(x =>
+                             x.Name == gherkinStep.DeclaredName))//todo compare with name parameter
             {
-                foreach (var wod in variableScope.WorkspaceObjects
-                             .Where(x => x.Name == gherkinStep.DeclaredName)) //todo compare with name parameter
-                {
 
-                }
             }
         }
 

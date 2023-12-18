@@ -30,12 +30,12 @@ public class SpecflowTableCellReference : TreeReferenceBase<GherkinTableCell>
         var textToken = myOwner.FindChild<GherkinToken>(o => o.NodeType == GherkinTokenTypes.TABLE_CELL);
         var txt = textToken?.GetText();
 
-        var wod = res.First().WorkspaceObjects.FirstOrDefault(x => x.Name == txt);
+        var wod = res.FirstOrDefault(x => x.Name == txt);
 
         if(wod is null)
             return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
 
-        var abc = ResolveResultFactory.CreateResolveResult(wod.DeclaredElement);
+        var abc = ResolveResultFactory.CreateResolveResult(wod.GherkinStep);
 
         // var resolveResult = ResolveResultFactory.CreateResolveResult(symbolInfo.GetDeclaredElement(), symbolInfo.GetSubstitution());
         return new ResolveResultWithInfo(abc, ResolveErrorType.OK);
