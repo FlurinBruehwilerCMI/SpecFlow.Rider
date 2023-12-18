@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Search;
+using ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
+using ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectUsages;
 using ReSharperPlugin.SpecflowRiderPlugin.Psi;
 
 namespace ReSharperPlugin.SpecflowRiderPlugin.Searchers;
@@ -26,5 +29,26 @@ public class SpeclFlowTablelCellReferenceSearcherFactory : DomainSpecificSearche
 
     public override ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
     {
+        if (!(declaredElement is GherkinStep gherkinStep))
+            return base.GetDeclaredElementSearchDomain(declaredElement);
+
+        var workspaceObjectDefinitionsCache = declaredElement.GetPsiServices().GetComponent<WorkspaceObjectDefinitionsCache>();
+        var workspaceObjectUsagesCache = declaredElement.GetPsiServices().GetComponent<WorkspaceObjectUsagesCache>();
+
+        var files = new List<IPsiSourceFile>();
+        foreach (var sourceFile in declaredElement.GetSourceFiles())
+        {
+            var wodsInFile = workspaceObjectDefinitionsCache.VariableScopesPerFile[sourceFile];
+            foreach (var variableScope in wodsInFile)
+            {
+                foreach (var wod in variableScope.WorkspaceObjects
+                             .Where(x => x.Name == gherkinStep.DeclaredName)) //todo compare with name parameter
+                {
+
+                }
+            }
+        }
+
+        return SearchDomainFactory.Instance.CreateSearchDomain(files);
     }
 }

@@ -1,7 +1,6 @@
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Resolve;
 
-namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
+namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
 
 public class WorkspaceObjectDefinition
 {

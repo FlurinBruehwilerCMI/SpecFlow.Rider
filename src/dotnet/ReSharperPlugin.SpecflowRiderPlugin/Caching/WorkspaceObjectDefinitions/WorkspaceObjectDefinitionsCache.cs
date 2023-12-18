@@ -14,7 +14,7 @@ using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 using ReSharperPlugin.SpecflowRiderPlugin.Psi;
 
-namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
+namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
 
 [PsiComponent]
 public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefinitionsCacheEntries>
@@ -41,9 +41,6 @@ public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefin
             return null;
 
         var file = sourceFile.GetPrimaryPsiFile().NotNull();
-
-        if (sourceFile.Name != "Geschäft wiedereroeffnen.feature")
-            return null;
 
         if (!file.Language.Is<GherkinLanguage>())
             return null;

@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
-using ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
 using ReSharperPlugin.SpecflowRiderPlugin.Extensions;
 using ReSharperPlugin.SpecflowRiderPlugin.Psi;
 

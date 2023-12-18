@@ -1,4 +1,4 @@
-﻿namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
+﻿namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
 
 public class FeatureFileCacheEntry
 {

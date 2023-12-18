@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
+namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
 
 public class VariableScope
 {

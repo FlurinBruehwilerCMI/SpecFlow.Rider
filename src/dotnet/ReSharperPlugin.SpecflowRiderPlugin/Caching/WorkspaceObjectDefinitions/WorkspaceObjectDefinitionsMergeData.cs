@@ -1,8 +1,7 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
-using ReSharperPlugin.SpecflowRiderPlugin.Caching.StepsDefinitions;
 
-namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectCache;
+namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions;
 
 public class WorkspaceObjectDefinitionsMergeData
 {
