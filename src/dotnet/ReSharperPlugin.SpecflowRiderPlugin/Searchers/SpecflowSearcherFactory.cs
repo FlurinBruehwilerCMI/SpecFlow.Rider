@@ -41,6 +41,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Searchers
             return new SpecflowStepReferenceSearcher(elements);
         }
 
+        //what is declaredElement
         public override ISearchDomain GetDeclaredElementSearchDomain(IDeclaredElement declaredElement)
         {
             if (!(declaredElement is IMethod methodDeclaration))

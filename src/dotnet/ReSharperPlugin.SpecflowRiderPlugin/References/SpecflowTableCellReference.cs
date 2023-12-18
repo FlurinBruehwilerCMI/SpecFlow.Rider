@@ -19,7 +19,27 @@ public class SpecflowTableCellReference : TreeReferenceBase<GherkinTableCell>
     {
         var psiServices = myOwner.GetPsiServices();
         var cache = psiServices.GetComponent<WorkspaceObjectDefinitionsCache>();
-        throw new NotImplementedException();
+
+        var currentFile = myOwner.GetSourceFile();
+
+        if (currentFile is null)
+            throw new Exception();
+
+        var res = cache.VariableScopesPerFile[currentFile];
+
+        var textToken = myOwner.FindChild<GherkinToken>(o => o.NodeType == GherkinTokenTypes.TABLE_CELL);
+        var txt = textToken?.GetText();
+
+        var wod = res.First().WorkspaceObjects.FirstOrDefault(x => x.Name == txt);
+
+        if(wod is null)
+            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+
+        var abc = ResolveResultFactory.CreateResolveResult(wod.DeclaredElement);
+
+        // var resolveResult = ResolveResultFactory.CreateResolveResult(symbolInfo.GetDeclaredElement(), symbolInfo.GetSubstitution());
+        return new ResolveResultWithInfo(abc, ResolveErrorType.OK);
+
     }
 
     public override string GetName()

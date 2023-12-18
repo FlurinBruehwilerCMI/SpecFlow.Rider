@@ -21,5 +21,10 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Psi
             var textToken = this.FindChild<GherkinToken>(o => o.NodeType == GherkinTokenTypes.TABLE_CELL);
             return textToken?.GetText();
         }
+
+        public SpecflowTableCellReference GetTableCellReference()
+        {
+            return _reference;
+        }
     }
 }

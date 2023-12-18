@@ -9,6 +9,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.StepsDefinitions
 {
     public class SpecflowStepsDefinitionMergeData
     {
+        //cs file - StepDefinitions
         public readonly OneToSetMap<IPsiSourceFile, SpecflowStepInfo> StepsDefinitionsPerFiles = new();
         public readonly OneToSetMap<string, IPsiSourceFile> SpecflowBindingTypes = new();
         public readonly OneToSetMap<string, IPsiSourceFile> PotentialSpecflowBindingTypes = new();

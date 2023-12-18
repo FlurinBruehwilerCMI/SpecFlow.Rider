@@ -180,6 +180,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.StepsDefinitions
             PopulateLocalCache();
         }
 
+        //buildPart: SpecflowStepsDefinitionsCacheEntries
         public override void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
             RemoveFromLocalCache(sourceFile);
@@ -198,20 +199,35 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.StepsDefinitions
             if (cacheItems == null)
                 return;
 
+            //loops through all classes
             foreach (var classEntry in cacheItems)
             {
                 if (classEntry.HasSpecflowBindingAttribute)
                     _mergeData.SpecflowBindingTypes.Add(classEntry.ClassName, sourceFile);
                 else
                     _mergeData.PotentialSpecflowBindingTypes.Add(classEntry.ClassName, sourceFile);
+
                 foreach (var method in classEntry.Methods)
-                foreach (var step in method.Steps)
-                    _mergeData.StepsDefinitionsPerFiles.Add(sourceFile, _specflowStepInfoFactory.Create(classEntry.ClassName, method.MethodName, method.MethodParameterTypes, method.MethodParameterNames, step.StepKind, step.Pattern, classEntry.Scopes, method.Scopes));
+                {
+                    foreach (var step in method.Steps)
+                    {
+                        _mergeData.StepsDefinitionsPerFiles.Add(sourceFile,
+                            _specflowStepInfoFactory.Create(classEntry.ClassName,
+                                method.MethodName,
+                                method.MethodParameterTypes,
+                                method.MethodParameterNames,
+                                step.StepKind,
+                                step.Pattern,
+                                classEntry.Scopes,
+                                method.Scopes));
+                    }
+                }
             }
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
+            //fileSteps: steps in set cs file
             var fileSteps = _mergeData.StepsDefinitionsPerFiles[sourceFile];
             foreach (var classNameInFile in fileSteps.Select(x => x.ClassFullName).Distinct())
             {
