@@ -18,7 +18,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectDefinitions
 [PsiComponent]
 public class WorkspaceObjectDefinitionsCache : SimpleICache<WorkspaceObjectDefinitionsCacheEntries>
 {
-    public OneToSetMap<IPsiSourceFile, WorkspaceObjectDefinitionsCacheEntry> VariableScopesPerFile => _mergeData.WODPerFile;
+    public OneToSetMap<IPsiSourceFile, WorkspaceObjectDefinitionsCacheEntry> WODPerFile => _mergeData.WODPerFile;
 
     private readonly Regex _regex = new(@"ein Objekt vom Typ (?<objTyp>\w*) namens (?<objName>\w*)");
     private readonly WorkspaceObjectDefinitionsMergeData _mergeData = new();

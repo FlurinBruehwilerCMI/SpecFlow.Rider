@@ -25,7 +25,7 @@ public class SpecflowTableCellReference : TreeReferenceBase<GherkinTableCell>
         if (currentFile is null)
             throw new Exception();
 
-        var res = cache.VariableScopesPerFile[currentFile];
+        var res = cache.WODPerFile[currentFile];
 
         var textToken = myOwner.FindChild<GherkinToken>(o => o.NodeType == GherkinTokenTypes.TABLE_CELL);
         var txt = textToken?.GetText();

@@ -18,8 +18,21 @@ public class SpeclFlowTablelCellReferenceSearcherFactory : DomainSpecificSearche
         return languageType.Is<CSharpLanguage>() || languageType.Is<GherkinLanguage>();
     }
 
-    public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement element)
+    public override IEnumerable<string> GetAllPossibleWordsInFile(IDeclaredElement declaredElement)
     {
+        //WO Declaration
+        if (!(declaredElement is GherkinStep gherkinStep))
+            return base.GetAllPossibleWordsInFile(declaredElement);
+
+        var specflowStepsDefinitionsCache = declaredElement.GetPsiServices().GetComponent<WorkspaceObjectDefinitionsCache>();
+        var words = new HashSet<string>();
+        foreach (var sourceFile in declaredElement.GetSourceFiles())
+        {
+            var stepsInFile = specflowStepsDefinitionsCache.WODPerFile[sourceFile];
+            foreach (var step in stepsInFile.Where(x => x.Name == gherkinStep.DeclaredName)) //todo use actual name
+                words.Add(step.Name);
+        }
+        return words;
     }
 
     public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements, ReferenceSearcherParameters referenceSearcherParameters)
@@ -38,12 +51,18 @@ public class SpeclFlowTablelCellReferenceSearcherFactory : DomainSpecificSearche
         var files = new List<IPsiSourceFile>();
         foreach (var sourceFile in declaredElement.GetSourceFiles())
         {
-            var wodsInFile = workspaceObjectDefinitionsCache.VariableScopesPerFile[sourceFile];
-            foreach (var variableScope in wodsInFile
+            var wodsInFile = workspaceObjectDefinitionsCache.WODPerFile[sourceFile];
+            foreach (var woDefinition in wodsInFile
                          .Where(x =>
                              x.Name == gherkinStep.DeclaredName))//todo compare with name parameter
             {
-
+                foreach (var woUsage in workspaceObjectUsagesCache.VariableScopesPerFile[sourceFile])
+                {
+                    if (woDefinition.Name == woUsage.Name)
+                    {
+                        files.Add(sourceFile);
+                    }
+                }
             }
         }
 

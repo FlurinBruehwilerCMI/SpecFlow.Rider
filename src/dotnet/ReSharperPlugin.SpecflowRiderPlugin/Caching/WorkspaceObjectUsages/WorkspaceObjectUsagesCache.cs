@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 using ReSharperPlugin.SpecflowRiderPlugin.Psi;
 
@@ -17,6 +18,8 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Caching.WorkspaceObjectUsages;
 [PsiComponent]
 public class WorkspaceObjectUsagesCache : SimpleICache<WorkspaceObjectUsagesCacheEntries>
 {
+    public OneToSetMap<IPsiSourceFile, WorkspaceObjectUsageCacheEntry> VariableScopesPerFile => _mergeData.WOUPerFile;
+
     private readonly WorkspaceObjectUsageMergeData _mergeData = new();
     public WorkspaceObjectUsagesCache(Lifetime lifetime, [NotNull] IShellLocks locks, [NotNull] IPersistentIndexManager persistentIndexManager, IUnsafeMarshaller<WorkspaceObjectUsagesCacheEntries> valueMarshaller, long? version = null) : base(lifetime, locks, persistentIndexManager, valueMarshaller, version)
     {
