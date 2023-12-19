@@ -1,21 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.DocumentModel;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.UI.Icons;
 using ReSharperPlugin.SpecflowRiderPlugin.Caching.StepsDefinitions;
 using ReSharperPlugin.SpecflowRiderPlugin.References;
 using ReSharperPlugin.SpecflowRiderPlugin.Utils.TestOutput;
 
 namespace ReSharperPlugin.SpecflowRiderPlugin.Psi
 {
-    public class GherkinStep : GherkinElement
+    public class GherkinStep : GherkinElement, IDeclaredElement, IDeclaration
     {
         public GherkinStepKind StepKind { get; }
         public GherkinStepKind EffectiveStepKind { get; }
-        private SpecflowStepDeclarationReference _reference;
+        public SpecflowStepDeclarationReference _reference;
 
         public GherkinStep(GherkinStepKind stepKind, GherkinStepKind effectiveStepKind) : base(GherkinNodeTypes.STEP)
         {
@@ -251,5 +255,68 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Psi
         {
             return GetContainingNode<GherkinScenario>()?.GetScenarioText();
         }
+
+        public DeclaredElementType GetElementType() => GherkinDeclaredElementType.STEP;
+
+        public void SetName(string name)
+        {
+
+        }
+
+        public TreeTextRange GetNameRange()
+        {
+            return new TreeTextRange();
+        }
+
+        public bool IsSynthetic()
+        {
+            return false;
+        }
+
+        public IDeclaredElement DeclaredElement { get; }
+        public string DeclaredName { get; } = string.Empty;
+
+        public IList<IDeclaration> GetDeclarations()
+        {
+            return new List<IDeclaration>
+            {
+                this
+            };
+        }
+
+        public IList<IDeclaration> GetDeclarationsIn(IPsiSourceFile sourceFile)
+        {
+            return new List<IDeclaration>
+            {
+                this
+            };
+        }
+
+        public XmlNode GetXMLDoc(bool inherit)
+        {
+            return new XmlDocument();
+        }
+
+        public XmlNode GetXMLDescriptionSummary(bool inherit)
+        {
+            return new XmlDocument();
+        }
+
+        public string ShortName { get; } = string.Empty;
+        public bool CaseSensitiveName { get; } = false;
+        public PsiLanguageType PresentationLanguage { get; } = GherkinLanguage.Instance;
+
+    }
+
+    public class GherkinDeclaredElementType : DeclaredElementTypeBase
+    {
+        [NotNull]
+        public static readonly DeclaredElementType STEP = new GherkinDeclaredElementType("step", PsiSymbolsThemedIcons.Method.Id);
+
+        private GherkinDeclaredElementType(string name, [CanBeNull] IconId imageName) : base(name, imageName)
+        {
+        }
+
+        protected override IDeclaredElementPresenter DefaultPresenter { get; }
     }
 }

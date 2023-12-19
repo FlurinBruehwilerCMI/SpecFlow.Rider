@@ -113,6 +113,11 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.Psi
             public GherkinTableCellNodeType(string name, int index) : base(name, index)
             {
             }
+
+            public override CompositeElement Create(object userData)
+            {
+                return new GherkinTableCell();
+            }
         }
         
         private class GherkinTableHeaderRowNodeType : GherkinNodeType<GherkinTableHeaderRow>

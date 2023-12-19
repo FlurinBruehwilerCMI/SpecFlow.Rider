@@ -22,6 +22,7 @@ using IClassDeclaration = JetBrains.ReSharper.Psi.CSharp.Tree.IClassDeclaration;
 
 namespace ReSharperPlugin.SpecflowRiderPlugin.References
 {
+    //StepNotResolvedError
     public class SpecflowStepDeclarationReference : TreeReferenceBase<GherkinStep>
     {
         public SpecflowStepDeclarationReference([NotNull] GherkinStep owner) : base(owner)
@@ -33,6 +34,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.References
         public string FeatureText { get; private set; }
         public IList<string> Tags { get; private set; }
 
+        //why is this named "WithoutCache" when it clearly uses the SSDCache
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
             var psiServices = myOwner.GetPsiServices();
@@ -53,10 +55,13 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.References
                 if (!psiModule.Equals(sourceFile.PsiModule) && !psiModule.References(sourceFile.PsiModule))
                     continue;
 
+                //cacheEntries: steps in current File
                 foreach (var cacheEntry in cacheEntries.Where(c => c.StepKind == stepKind))
                 {
                     if (!myOwner.MatchScope(cacheEntry.Scopes))
                         continue;
+
+                    //if step matches
                     if (cacheEntry.Regex?.IsMatch(stepText) == true)
                     {
                         var types = psiServices.Symbols.GetTypesAndNamespacesInFile(sourceFile);
@@ -67,6 +72,7 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.References
                             if (cl.GetClrName().FullName != cacheEntry.ClassFullName)
                                 continue;
 
+                            //find method that belongs to cache entry (StepDefinition).. why???
                             IDeclaredElement matchingMethod = null;
                             foreach (var method in GetAllMethodFromClassAndBaseClasses(cl))
                             {
@@ -100,19 +106,27 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.References
                                 if (allParameterTypesMatch)
                                     matchingMethod = method;
                             }
+
+                            //matchingMethod is the method that belong to the step
                             if (matchingMethod == null)
                                 continue;
 
                             var symbolInfo = new SymbolInfo(matchingMethod);
+
+                            //when do goto definition, we land at symbolInfo (i.e. the StepDefinition)
+
                             var resolveResult = ResolveResultFactory.CreateResolveResult(symbolInfo.GetDeclaredElement(), symbolInfo.GetSubstitution());
 
                             RegexPattern = cacheEntry.Regex;
+
+                            //wuhee, we have fount the relevant step!!!!
                             return new ResolveResultWithInfo(resolveResult, ResolveErrorType.OK);
                         }
                     }
                 }
             }
 
+            //what is this?
             var assemblyStepDefinitionCache = psiServices.GetComponent<AssemblyStepDefinitionCache>();
             var psiAssemblyFileLoader = psiServices.GetComponent<IPsiAssemblyFileLoader>();
             foreach (var (psiAssembly, cacheEntries) in assemblyStepDefinitionCache.AllStepsPerAssembly)
@@ -149,6 +163,8 @@ namespace ReSharperPlugin.SpecflowRiderPlugin.References
 
                 }
             }
+
+            //ok, we didn't find any matching stepdefinition....
             return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
         }
 
